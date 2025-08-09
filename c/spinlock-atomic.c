@@ -2,12 +2,11 @@
 #include <stdatomic.h>
 #include <pthread.h>
 
-atomic_flag lock = ATOMIC_FLAG_INIT;  // атомарный флаг
+atomic_flag lock = ATOMIC_FLAG_INIT;
 int counter = 0;
 
 void spin_lock(atomic_flag *l) {
     while (atomic_flag_test_and_set(l)) {
-        // крутимся, пока lock == true
     }
 }
 
