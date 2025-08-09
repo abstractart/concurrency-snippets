@@ -6,7 +6,7 @@ int counter = 0;
 
 void* worker(void* arg) {
     for (int i = 0; i < 1000000; i++) {
-        pthread_spin_lock(&lock);   // спин, пока не освободится
+        pthread_spin_lock(&lock);
         counter++;
         pthread_spin_unlock(&lock);
     }
