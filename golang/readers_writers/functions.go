@@ -1,25 +1,54 @@
-package main
+package readers_writers
 
 import (
-	"math/rand"
 	"sync"
 	"sync/atomic"
-	"time"
 )
 
-const rwmutexMaxReaders = 1 << 20 // можно вернуть 1<<30, если нужно
+func Reader(m map[int]struct{}, mu RMMutexI) {
+	mu.RLock()
+	//_ = m[rand.Intn(1000)]
+	mu.RUnlock()
+}
+
+func Writer(m map[int]struct{}, mu RMMutexI) {
+	mu.Lock()
+	//m[rand.Intn(1000)] = struct{}{}
+	mu.Unlock()
+}
+
+const rwmutexMaxReaders = 1 << 30
 
 type noCopy struct{}
 
 func (*noCopy) Lock()   {}
 func (*noCopy) Unlock() {}
 
+type RMMutexI interface {
+	RLock()
+	RUnlock()
+	Lock()
+	Unlock()
+}
 type MyRWMutex struct {
 	w           sync.Mutex
 	readerSem   chan struct{}
 	writerSem   chan struct{}
 	readerCount atomic.Int32
 	readerWait  atomic.Int32
+}
+
+type MyRWMutexWithSyncMutex struct {
+	noCopy noCopy
+	sync.Mutex
+}
+
+func (mu *MyRWMutexWithSyncMutex) RLock() {
+	mu.Lock()
+}
+
+func (mu *MyRWMutexWithSyncMutex) RUnlock() {
+	mu.Unlock()
 }
 
 func NewMyRWMutex() MyRWMutex {
@@ -59,42 +88,4 @@ func (mu *MyRWMutex) Unlock() {
 		mu.readerSem <- struct{}{}
 	}
 	mu.w.Unlock()
-}
-
-func main() {
-	rand.Seed(time.Now().UnixNano())
-
-	shared := make(map[int]struct{})
-	mu := NewMyRWMutex()
-
-	for i := 0; i < 4; i++ {
-		go func() {
-			reader(shared, &mu)
-		}()
-	}
-	for i := 0; i < 2; i++ {
-		go func() {
-			writer(shared, &mu)
-		}()
-	}
-
-	select {}
-}
-
-func reader(m map[int]struct{}, mu *MyRWMutex) {
-	for {
-		mu.RLock()
-		_ = m[rand.Intn(1000)]
-		mu.RUnlock()
-		time.Sleep(time.Millisecond)
-	}
-}
-
-func writer(m map[int]struct{}, mu *MyRWMutex) {
-	for {
-		mu.Lock()
-		m[rand.Intn(1000)] = struct{}{}
-		mu.Unlock()
-		time.Sleep(time.Millisecond)
-	}
 }
