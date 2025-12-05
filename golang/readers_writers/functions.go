@@ -3,17 +3,18 @@ package readers_writers
 import (
 	"sync"
 	"sync/atomic"
+	"time"
 )
 
 func Reader(m map[int]struct{}, mu RMMutexI) {
 	mu.RLock()
-	//_ = m[rand.Intn(1000)]
+	time.Sleep(time.Microsecond)
 	mu.RUnlock()
 }
 
 func Writer(m map[int]struct{}, mu RMMutexI) {
 	mu.Lock()
-	//m[rand.Intn(1000)] = struct{}{}
+	time.Sleep(time.Microsecond)
 	mu.Unlock()
 }
 
