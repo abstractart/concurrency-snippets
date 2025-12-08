@@ -1,10 +1,17 @@
 package readers_writers
 
 import (
+	"runtime"
 	"sync"
 	"testing"
 	"time"
 )
+
+func init() {
+	runtime.SetMutexProfileFraction(1)
+	runtime.SetBlockProfileRate(1)
+
+}
 
 func BenchmarkRWRead(b *testing.B) {
 	var mu sync.RWMutex
@@ -38,3 +45,9 @@ func BenchmarkMyRead(b *testing.B) {
 		}
 	})
 }
+
+// go test -bench=BenchmarkMRead -benchmem -mutexprofile profile.out
+// go test -bench=BenchmarkRWRead -benchmem -mutexprofile profile_rw.out
+
+// go test -bench=BenchmarkMRead -benchmem -blockprofile profile_block.out
+// go test -bench=BenchmarkRWRead -benchmem -blockprofile profile_block_rw.out
