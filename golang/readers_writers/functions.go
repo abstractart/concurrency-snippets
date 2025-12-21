@@ -3,20 +3,7 @@ package readers_writers
 import (
 	"sync"
 	"sync/atomic"
-	"time"
 )
-
-func Reader(m map[int]struct{}, mu RMMutexI) {
-	mu.RLock()
-	time.Sleep(time.Microsecond)
-	mu.RUnlock()
-}
-
-func Writer(m map[int]struct{}, mu RMMutexI) {
-	mu.Lock()
-	time.Sleep(time.Microsecond)
-	mu.Unlock()
-}
 
 const rwmutexMaxReaders = 1 << 30
 
@@ -89,4 +76,22 @@ func (mu *MyRWMutex) Unlock() {
 		mu.readerSem <- struct{}{}
 	}
 	mu.w.Unlock()
+}
+
+type ChanMutex struct {
+	ch chan struct{}
+}
+
+func NewChanMutex() *ChanMutex {
+	m := ChanMutex{ch: make(chan struct{}, 1)}
+	go func() { m.ch <- struct{}{} }() // токен
+	return &m
+}
+
+func (m *ChanMutex) Lock() {
+	<-m.ch
+}
+
+func (m *ChanMutex) Unlock() {
+	m.ch <- struct{}{}
 }

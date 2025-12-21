@@ -1,21 +1,33 @@
 package main
 
-import "github.com/concurrency-examples/golang/readers_writers"
+import (
+	"sync"
+
+	"github.com/concurrency-examples/golang/readers_writers"
+)
 
 func main() {
-	shared := make(map[int]struct{})
-	mu := readers_writers.MyRWMutexWithSyncMutex{}
+	var val int
+	mu := readers_writers.NewChanMutex()
 
-	for i := 0; i < 4; i++ {
+	var wg sync.WaitGroup
+	wg.Add(10)
+
+	for i := 0; i < 10; i++ {
 		go func() {
-			readers_writers.Reader(shared, &mu)
+			defer wg.Done()
+
+			for j := 0; j < 100000; j++ {
+				mu.Lock()
+				val += 1
+				mu.Unlock()
+			}
 		}()
 	}
-	for i := 0; i < 2; i++ {
-		go func() {
-			readers_writers.Writer(shared, &mu)
-		}()
+	wg.Wait()
+
+	if val != 1000000 {
+		panic(val)
 	}
 
-	select {}
 }

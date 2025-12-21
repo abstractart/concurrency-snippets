@@ -3,39 +3,43 @@ package readers_writers
 import (
 	"sync"
 	"testing"
+	"time"
 )
 
-func BenchmarkRWWrite(b *testing.B) {
+func BenchmarkPauseRWWrite(b *testing.B) {
 	var mu sync.RWMutex
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.Lock()
+			time.Sleep(criticalsectionDuration) // или просто более длинная работа
 			mu.Unlock()
 		}
 	})
 }
 
-func BenchmarkMWrite(b *testing.B) {
+func BenchmarkPauseMWrite(b *testing.B) {
 	var mu sync.Mutex
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.Lock()
+			time.Sleep(criticalsectionDuration) // или просто более длинная работа
 			mu.Unlock()
 		}
 	})
 }
 
-func BenchmarkMChanWrite(b *testing.B) {
+func BenchmarkPauseMChanWrite(b *testing.B) {
 	var mu = NewChanMutex()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.Lock()
+			time.Sleep(criticalsectionDuration) // или просто более длинная работа
 			mu.Unlock()
 		}
 	})
 }
 
-// func BenchmarkMyWrite(b *testing.B) {
+// func BenchmarkMyWritePause(b *testing.B) {
 // 	var mu MyRWMutex
 // 	b.RunParallel(func(pb *testing.PB) {
 // 		for pb.Next() {

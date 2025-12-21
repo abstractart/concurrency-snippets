@@ -1,0 +1,30 @@
+readers_writers.test delay
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+5127.80ms	90.65%	90.65%	5372.69ms	94.98%	sync.(*Mutex).Unlock	(inline)
+527.71ms	9.33%	99.98%	527.71ms	9.33%	runtime.unlock	(inline)
+
+
+
+readers_writers.test contentions
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+473346	73.97%	73.97%	545323	85.21%	sync.(*Mutex).Unlock	(inline)
+166399	26.00%	99.97%	166399	26.00%	runtime.unlock	(inline)
+
+
+readers_writers.test cpu
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+2.53s	51.53%	51.53%	2.53s	51.53%	runtime.usleep	
+1.31s	26.68%	78.21%	1.31s	26.68%	runtime.pthread_cond_wait	
+0.53s	10.79%	89.00%	0.53s	10.79%	runtime.pthread_cond_signal	
+0.16s	3.26%	92.26%	1.10s	22.40%	internal/sync.(*Mutex).lockSlow	
+0.08s	1.63%	93.89%	1.18s	24.03%	internal/sync.(*Mutex).Lock	(inline)
+0.05s	1.02%	94.91%	0.05s	1.02%	runtime.pcvalue	
+0.04s	0.81%	95.72%	0.04s	0.81%	runtime.nanotime1	
+0.04s	0.81%	96.54%	0.04s	0.81%	runtime.cansemacquire	(inline)
+0.04s	0.81%	97.35%	1.54s	31.36%	internal/sync.(*Mutex).Unlock	(inline)
+0.03s	0.61%	97.96%	1.62s	32.99%	runtime.stealWork	
+0.02s	0.41%	98.37%	2.02s	41.14%	runtime.lock2	
+0.01s	0.20%	98.57%	1.19s	24.24%	sync.(*Mutex).Lock	(inline)
+0.01s	0.20%	98.78%	0.93s	18.94%	runtime.semacquire1	
+0.01s	0.20%	98.98%	1.95s	39.71%	runtime.findRunnable	
+0.01s	0.20%	99.19%	0.03s	0.61%	runtime.(*mLockProfile).captureStack	

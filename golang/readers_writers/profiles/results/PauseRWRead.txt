@@ -1,0 +1,19 @@
+readers_writers.test delay
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+4501.03us	98.25%	98.25%	4501.03us	98.25%	runtime.unlock	(inline)
+79.96us	1.75%	100.00%	79.96us	1.75%	runtime._LostContendedRuntimeLock	
+
+
+readers_writers.test contentions
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+3918	99.19%	99.19%	3918	99.19%	runtime.unlock	(inline)
+32	0.81%	100.00%	32	0.81%	runtime._LostContendedRuntimeLock	
+
+
+readers_writers.test cpu
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+1.06s	41.73%	41.73%	1.06s	41.73%	runtime.pthread_cond_wait	
+0.78s	30.71%	72.44%	0.78s	30.71%	runtime.kevent	
+0.40s	15.75%	88.19%	0.40s	15.75%	runtime.pthread_cond_signal	
+0.26s	10.24%	98.43%	0.26s	10.24%	runtime.usleep	
+0.01s	0.39%	98.82%	0.02s	0.79%	time.Sleep	

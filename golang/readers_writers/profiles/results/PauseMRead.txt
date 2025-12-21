@@ -1,0 +1,16 @@
+readers_writers.test delay
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+12.51s	100.00%	100.00%	12.51s	100.00%	sync.(*Mutex).Unlock	(inline)
+
+
+readers_writers.test contentions
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+302570	99.85%	99.85%	302571	99.85%	sync.(*Mutex).Unlock	(inline)
+
+
+readers_writers.test cpu
+Flat	Flat%	Sum%	Cum	Cum%	Name	Inlined?
+520ms	36.62%	36.62%	520ms	36.62%	runtime.kevent	
+460ms	32.39%	69.01%	460ms	32.39%	runtime.pthread_cond_wait	
+260ms	18.31%	87.32%	260ms	18.31%	runtime.pthread_cond_signal	
+180ms	12.68%	100.00%	180ms	12.68%	runtime.usleep	

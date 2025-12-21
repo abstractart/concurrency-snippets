@@ -4,7 +4,6 @@ import (
 	"runtime"
 	"sync"
 	"testing"
-	"time"
 )
 
 func init() {
@@ -18,7 +17,6 @@ func BenchmarkRWRead(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.RLock()
-			time.Sleep(time.Microsecond) // или просто более длинная работа
 			mu.RUnlock()
 		}
 	})
@@ -29,25 +27,36 @@ func BenchmarkMRead(b *testing.B) {
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
 			mu.Lock()
-			time.Sleep(time.Microsecond) // или просто более длинная работа
 			mu.Unlock()
 		}
 	})
 }
 
-func BenchmarkMyRead(b *testing.B) {
-	var mu MyRWMutex
+func BenchmarkMChanRead(b *testing.B) {
+	var mu = NewChanMutex()
 	b.RunParallel(func(pb *testing.PB) {
 		for pb.Next() {
-			mu.RLock()
-			time.Sleep(time.Microsecond) // или просто более длинная работа
-			mu.RUnlock()
+			mu.Lock()
+			mu.Unlock()
 		}
 	})
 }
+
+// func BenchmarkMyRead(b *testing.B) {
+// 	var mu MyRWMutex
+// 	b.RunParallel(func(pb *testing.PB) {
+// 		for pb.Next() {
+// 			mu.RLock()
+// 			//time.Sleep(criticalsectionDuration) // или просто более длинная работа
+// 			mu.RUnlock()
+// 		}
+// 	})
+// }
 
 // go test -bench=BenchmarkMRead -benchmem -mutexprofile profile.out
 // go test -bench=BenchmarkRWRead -benchmem -mutexprofile profile_rw.out
 
 // go test -bench=BenchmarkMRead -benchmem -blockprofile profile_block.out
 // go test -bench=BenchmarkRWRead -benchmem -blockprofile profile_block_rw.out
+
+//go test -bench=BenchmarkMRead -benchmem -mutexprofile=BenchmarkMRead_mutex_profile.out -cpuprofile=BenchmarkMRead_cpu_profile.out -memprofile=BenchmarkMRead_memory_profile.out
