@@ -9,6 +9,3 @@ func main() {
 	val.Store(&s)
 
 }
-
-
-type N
