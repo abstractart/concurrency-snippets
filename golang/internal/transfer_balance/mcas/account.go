@@ -38,10 +38,28 @@ func (from *Account) Transfer(to *Account, amount int64) {
 		t.firstOp = newOperation(from, t, -amount)
 		t.secondOp = newOperation(to, t, +amount)
 
+		// Фиксируем порядок операций по адресу, чтобы граф cooperative helping
+		// был ациклическим: без порядка A помогает B, B помогает A → бесконечная рекурсия.
 		if uintptr(unsafe.Pointer(from)) > uintptr(unsafe.Pointer(to)) {
 			t.firstOp, t.secondOp = t.secondOp, t.firstOp
 		}
 
+		if t.commit(); t.succeeded() {
+			return
+		}
+	}
+}
+
+// TransferWithoutOrdering — то же что Transfer, но без сортировки операций по адресу.
+// При встречных переводах (A→B и B→A одновременно) cooperative helping может войти
+// в цикл: A помогает B, B помогает A, A помогает B... → бесконечная рекурсия.
+// Используется только для демонстрации проблемы в тестах.
+func (from *Account) TransferWithoutOrdering(to *Account, amount int64) {
+	for {
+		t := &tx{}
+		t.firstOp = newOperation(from, t, -amount)
+		t.secondOp = newOperation(to, t, +amount)
+		// ordering swap намеренно отсутствует
 		if t.commit(); t.succeeded() {
 			return
 		}
